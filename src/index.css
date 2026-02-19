@@ -11,6 +11,28 @@ All colors MUST be HSL.
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
+    /* SuportePro Corporate Blue */
+    --brand: 221 83% 37%;
+    --brand-light: 217 91% 60%;
+    --brand-dark: 224 76% 22%;
+    --brand-foreground: 0 0% 100%;
+    --brand-muted: 214 100% 97%;
+
+    /* Risk levels */
+    --risk-low: 142 71% 45%;
+    --risk-low-bg: 142 76% 96%;
+    --risk-medium: 38 92% 50%;
+    --risk-medium-bg: 48 100% 96%;
+    --risk-high: 25 95% 53%;
+    --risk-high-bg: 34 100% 96%;
+    --risk-critical: 0 84% 60%;
+    --risk-critical-bg: 0 86% 97%;
+
+    /* Status colors */
+    --status-resolved: 142 71% 45%;
+    --status-blocked: 0 84% 60%;
+    --status-pending: 38 92% 50%;
+
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
 
