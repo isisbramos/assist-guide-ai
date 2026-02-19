@@ -74,7 +74,7 @@ const SESSIONS: SessionRow[] = [
     status: 'Resolvido',
     action: 'Cache Hit',
     question: 'Como configuro o SSO para minha empresa?',
-    response: 'Acesso à seção de Segurança/SSO liberado com instruções.',
+    response: 'Pra criar uma automação: 1) vá em Automações, 2) clique em Nova Automação, 3) escolha o gatilho e as ações, e salve.',
     sources: ['KB-399 — Guia SSO Enterprise'],
     accessGate: 'Permitido — Owner tem acesso total',
     judgeDecision: 'Aprovado — dado técnico não sensível',
