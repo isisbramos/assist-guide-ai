@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import {
   MessageCircle, X, Send, CheckCircle, XCircle, AlertTriangle, Shield,
-  BookOpen, ChevronRight, BarChart2, Ticket, Clock, ChevronDown, FileText
+  BookOpen, ChevronRight, BarChart2, Ticket, Clock, ChevronDown, FileText,
+  Activity
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -268,7 +269,7 @@ export default function ChatWidget({ persona, onNavigate }: ChatWidgetProps) {
     } else if (isFallback) {
       setRisk('Médio');
       setTyping('Buscando na base de conhecimento…');
-      await delay(1200);
+      await delay(1000);
       setTyping(null);
       addMessage({
         type: 'bot',
@@ -313,8 +314,8 @@ export default function ChatWidget({ persona, onNavigate }: ChatWidgetProps) {
 
   const handleCreateTicket = (msgId: string) => {
     toast({
-      title: '✅ Ticket SUP-1042 criado',
-      description: 'Seu ticket foi registrado com sucesso. SLA estimado: 4h.',
+      title: 'Ticket SUP-1042 criado',
+      description: 'Seu ticket foi registrado. SLA estimado: 4h.',
     });
     setMessages(prev => prev.map(m =>
       m.id === msgId ? { ...m, extra: { ...(m.extra as any), ticketCreated: true } } : m
@@ -405,7 +406,7 @@ export default function ChatWidget({ persona, onNavigate }: ChatWidgetProps) {
                         <div className="bg-muted rounded-2xl rounded-tl-sm px-3 py-2.5 text-sm space-y-2.5">
                           <div>
                             <p className="font-semibold text-foreground text-sm">Não encontrei uma resposta confiável</p>
-                            <p className="text-xs text-muted-foreground mt-1">Para não arriscar uma orientação incorreta, posso criar um ticket para o Suporte.</p>
+                            <p className="text-xs text-muted-foreground mt-1">Pra não arriscar uma orientação errada, posso criar um ticket pro Suporte.</p>
                           </div>
                           <div className="flex gap-2 flex-wrap">
                             <button
@@ -433,20 +434,26 @@ export default function ChatWidget({ persona, onNavigate }: ChatWidgetProps) {
 
                       {/* Fallback — ticket created confirmation */}
                       {(msg.extra?.kind as string) === 'fallback' && (msg.extra as any)?.ticketCreated && (
-                        <div className="bg-[hsl(var(--brand-muted))] border border-[hsl(var(--brand-light))]/30 rounded-2xl rounded-tl-sm px-3 py-2.5 text-sm space-y-2">
-                          <div className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-[hsl(var(--brand))] shrink-0" />
+                        <div className="bg-[hsl(var(--brand-muted))] border border-[hsl(var(--brand-light))]/30 rounded-2xl rounded-tl-sm px-3 py-2.5 text-sm space-y-2.5">
+                          <div className="flex items-start gap-2">
+                            <CheckCircle className="h-4 w-4 text-[hsl(var(--brand))] shrink-0 mt-0.5" />
                             <div>
                               <p className="font-semibold text-foreground text-sm">Ticket SUP-1042 criado</p>
-                              <p className="text-xs text-muted-foreground">Status: Escalonado · SLA estimado: 4h</p>
+                              <p className="text-xs text-muted-foreground mt-0.5">Não quero te passar uma orientação incerta. Já abri o ticket SUP-1042 com o Suporte — você consegue acompanhar por aqui.</p>
                             </div>
                           </div>
-                          <button
-                            onClick={() => setTicketTimelineOpen(true)}
-                            className="flex items-center gap-1.5 text-xs font-medium text-[hsl(var(--brand))] hover:underline"
-                          >
-                            <Clock className="h-3 w-3" /> Acompanhar Ticket <ChevronRight className="h-3 w-3" />
-                          </button>
+                          <div className="flex gap-3 text-xs text-muted-foreground pl-6">
+                            <span className="flex items-center gap-1"><Activity className="h-3 w-3" /> Status: <span className="font-medium text-foreground">Escalonado</span></span>
+                            <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> SLA: <span className="font-medium text-foreground">4h</span></span>
+                          </div>
+                          <div className="pl-6">
+                            <button
+                              onClick={() => setTicketTimelineOpen(true)}
+                              className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-[hsl(var(--brand))] text-[hsl(var(--brand-foreground))] hover:bg-[hsl(var(--brand-dark))] transition-colors"
+                            >
+                              <Clock className="h-3 w-3" /> Acompanhar Ticket <ChevronRight className="h-3 w-3" />
+                            </button>
+                          </div>
                         </div>
                       )}
 
