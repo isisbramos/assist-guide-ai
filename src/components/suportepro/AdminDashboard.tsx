@@ -58,7 +58,7 @@ const SESSIONS: SessionRow[] = [
     status: 'Escalonado',
     action: 'Ticket SUP-1042',
     question: 'Minha automação de boas-vindas não está disparando para novos leads.',
-    response: 'Não encontrei resposta confiável na base de conhecimento. Ticket criado para o time de suporte.',
+    response: 'Não achei uma resposta sólida o suficiente pra te passar. Criei o ticket SUP-1042 pro time de Suporte dar sequência.',
     sources: [],
     accessGate: 'Permitido — recurso público',
     judgeDecision: 'Aprovado — sem dados sensíveis',
