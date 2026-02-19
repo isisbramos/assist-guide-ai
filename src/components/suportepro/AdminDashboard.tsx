@@ -30,7 +30,7 @@ const SESSIONS: SessionRow[] = [
     status: 'Bloqueado',
     action: 'Fallback',
     question: 'Quero ver as faturas do mês',
-    response: 'Acesso negado. Seu perfil (Member) não tem permissão para acessar dados de faturamento.',
+    response: 'Você está como Member, então não consigo abrir as faturas por aqui. Se quiser, posso avisar um Admin.',
     sources: [],
     accessGate: 'Bloqueado — Access Gate: Billing (requer Admin ou Owner)',
     judgeDecision: 'N/A — bloqueado antes da execução',
