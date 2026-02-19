@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { TrendingUp, DollarSign, Shield, Users, ChevronRight, X } from 'lucide-react';
+import {
+  TrendingUp, DollarSign, Shield, Users, ChevronRight, X,
+  Ticket, Clock, TicketCheck, Activity
+} from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { SessionRow, RiskLevel } from './types';
 
 const SESSIONS: SessionRow[] = [
@@ -52,16 +53,18 @@ const SESSIONS: SessionRow[] = [
   {
     id: '4',
     user: 'Ana',
-    intent: 'Ver faturas',
+    intent: 'Automação não dispara',
     risk: 'Médio',
-    status: 'Resolvido',
-    action: 'DB Fetch',
-    question: 'Quero verificar os custos deste mês',
-    response: 'Resumo financeiro de fevereiro 2026 exibido com sucesso.',
-    sources: ['Billing Module v2.3'],
-    accessGate: 'Permitido — Admin autorizado para Billing',
-    judgeDecision: 'Aprovado — dados financeiros internos, acesso validado',
-    feedback: 'positivo',
+    status: 'Escalonado',
+    action: 'Ticket SUP-1042',
+    question: 'Minha automação de boas-vindas não está disparando para novos leads.',
+    response: 'Não encontrei resposta confiável na base de conhecimento. Ticket criado para o time de suporte.',
+    sources: [],
+    accessGate: 'Permitido — recurso público',
+    judgeDecision: 'Aprovado — sem dados sensíveis',
+    feedback: null,
+    ticketId: 'SUP-1042',
+    sla: '4h',
   },
   {
     id: '5',
@@ -89,6 +92,7 @@ const riskConfig: Record<RiskLevel, { label: string; class: string }> = {
 const statusConfig: Record<string, string> = {
   'Resolvido': 'bg-[hsl(var(--risk-low-bg))] text-[hsl(var(--risk-low))]',
   'Bloqueado': 'bg-[hsl(var(--risk-critical-bg))] text-[hsl(var(--risk-critical))]',
+  'Escalonado': 'bg-[hsl(var(--brand-muted))] text-[hsl(var(--brand))]',
 };
 
 const actionConfig: Record<string, string> = {
@@ -96,7 +100,15 @@ const actionConfig: Record<string, string> = {
   'Fallback': 'bg-[hsl(var(--risk-medium-bg))] text-[hsl(var(--risk-medium))]',
   'Judge Block': 'bg-[hsl(var(--risk-critical-bg))] text-[hsl(var(--risk-critical))]',
   'DB Fetch': 'bg-[hsl(var(--brand-muted))] text-[hsl(var(--brand))]',
+  'Ticket SUP-1042': 'bg-[hsl(var(--risk-medium-bg))] text-[hsl(var(--risk-medium))]',
 };
+
+const TICKET_TIMELINE = [
+  { step: 'Criado', time: '14:32', done: true },
+  { step: 'Em triagem', time: '~15 min', done: false },
+  { step: 'Em atendimento', time: '~2h', done: false },
+  { step: 'Resolvido', time: 'SLA: 4h', done: false },
+];
 
 export default function AdminDashboard() {
   const [selectedSession, setSelectedSession] = useState<SessionRow | null>(null);
@@ -110,7 +122,7 @@ export default function AdminDashboard() {
           <p className="text-muted-foreground text-sm mt-1">Monitoramento e governança do Assistente SuportePro</p>
         </div>
 
-        {/* KPI Cards */}
+        {/* Primary KPI Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="border shadow-sm">
             <CardContent className="p-5">
@@ -128,6 +140,9 @@ export default function AdminDashboard() {
                 <TrendingUp className="h-3 w-3 text-[hsl(var(--risk-low))]" />
                 <span className="text-xs text-[hsl(var(--risk-low))] font-medium">+8% vs. mês anterior</span>
               </div>
+              <p className="text-[10px] text-muted-foreground mt-1.5 leading-tight">
+                Considera apenas resoluções validadas; escalonamentos viram ticket (rota segura).
+              </p>
             </CardContent>
           </Card>
 
@@ -143,7 +158,7 @@ export default function AdminDashboard() {
                   <DollarSign className="h-5 w-5 text-[hsl(var(--brand))]" />
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground mt-3">180 tickets × $25/ticket evitados</p>
+              <p className="text-xs text-muted-foreground mt-3">180 tickets evitados × $25/ticket (mock)</p>
             </CardContent>
           </Card>
 
@@ -176,6 +191,39 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <p className="text-xs text-muted-foreground mt-3">152 de 400 usuários/mês</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Secondary KPI Cards */}
+        <div className="grid grid-cols-2 gap-4">
+          <Card className="border shadow-sm">
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="p-2.5 rounded-xl bg-[hsl(var(--risk-medium-bg))] shrink-0">
+                <Ticket className="h-5 w-5 text-[hsl(var(--risk-medium))]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Tickets Criados pelo Agente</p>
+                <p className="text-2xl font-bold text-foreground mt-0.5">18 <span className="text-sm font-normal text-muted-foreground">/semana</span></p>
+              </div>
+              <div className="flex items-center gap-1 text-xs text-[hsl(var(--risk-medium))] font-medium shrink-0">
+                <Activity className="h-3 w-3" /> +3 vs. ant.
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border shadow-sm">
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="p-2.5 rounded-xl bg-[hsl(var(--risk-low-bg))] shrink-0">
+                <TicketCheck className="h-5 w-5 text-[hsl(var(--risk-low))]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">SLA Cumprido (Suporte)</p>
+                <p className="text-2xl font-bold text-[hsl(var(--risk-low))] mt-0.5">92%</p>
+              </div>
+              <div className="flex items-center gap-1 text-xs text-[hsl(var(--risk-low))] font-medium shrink-0">
+                <TrendingUp className="h-3 w-3" /> Meta: 90%
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -216,7 +264,7 @@ export default function AdminDashboard() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusConfig[session.status] || ''}`}>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusConfig[session.status] || 'bg-muted text-muted-foreground'}`}>
                           {session.status}
                         </span>
                       </td>
@@ -242,7 +290,7 @@ export default function AdminDashboard() {
         <div className="fixed inset-0 z-50 flex">
           <div className="flex-1 bg-foreground/20" onClick={() => setSelectedSession(null)} />
           <div className="w-full max-w-md bg-background border-l shadow-xl flex flex-col overflow-hidden animate-in slide-in-from-right-full duration-300">
-            <div className="flex items-center justify-between px-5 py-4 border-b">
+            <div className="flex items-center justify-between px-5 py-4 border-b shrink-0">
               <div>
                 <h2 className="font-semibold text-foreground">Detalhes da Sessão</h2>
                 <p className="text-xs text-muted-foreground">{selectedSession.user} — {selectedSession.intent}</p>
@@ -257,7 +305,7 @@ export default function AdminDashboard() {
                 <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${riskConfig[selectedSession.risk].class}`}>
                   Risco: {selectedSession.risk}
                 </span>
-                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig[selectedSession.status]}`}>
+                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig[selectedSession.status] || ''}`}>
                   {selectedSession.status}
                 </span>
                 <span className={`inline-flex items-center px-2.5 py-1 rounded text-xs font-medium ${actionConfig[selectedSession.action] || ''}`}>
@@ -280,6 +328,34 @@ export default function AdminDashboard() {
                   {selectedSession.response}
                 </div>
               </div>
+
+              {/* Ticket info if escalated */}
+              {selectedSession.ticketId && (
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Ticket de Suporte</p>
+                  <div className="bg-muted/50 border rounded-lg p-3 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Ticket className="h-4 w-4 text-[hsl(var(--brand))]" />
+                        <span className="text-sm font-semibold text-foreground">{selectedSession.ticketId}</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Clock className="h-3 w-3" /> SLA: {selectedSession.sla}
+                      </div>
+                    </div>
+                    {/* Timeline */}
+                    <div className="space-y-2 pt-1">
+                      {TICKET_TIMELINE.map((item, i) => (
+                        <div key={i} className="flex items-center gap-2.5">
+                          <div className={`w-2 h-2 rounded-full shrink-0 ${item.done ? 'bg-[hsl(var(--brand))]' : 'bg-muted-foreground/30'}`} />
+                          <span className={`text-xs flex-1 ${item.done ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>{item.step}</span>
+                          <span className="text-[10px] text-muted-foreground">{item.time}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Sources */}
               {selectedSession.sources.length > 0 && (
@@ -323,7 +399,7 @@ export default function AdminDashboard() {
                   {selectedSession.feedback === 'positivo' ? (
                     <span className="text-[hsl(var(--risk-low))] font-medium">✓ Resolveu o problema</span>
                   ) : selectedSession.feedback === null ? (
-                    <span className="text-muted-foreground">Sem feedback (bloqueado antes da resposta)</span>
+                    <span className="text-muted-foreground">Sem feedback registrado</span>
                   ) : (
                     <span className="text-[hsl(var(--risk-critical))] font-medium">✗ Não resolveu</span>
                   )}

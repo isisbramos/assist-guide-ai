@@ -47,4 +47,6 @@ export interface SessionRow {
   accessGate: string;
   judgeDecision: string;
   feedback: string | null;
+  ticketId?: string;
+  sla?: string;
 }
